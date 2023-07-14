@@ -1,61 +1,14 @@
 const express = require("express");
 const authMiddleware = require("../middlewares/auth-middleware");
-const { Likes, Users, Posts } = require("../models");
+const { Likes, Posts } = require("../models");
 const router = express.Router();
 const { Op } = require("sequelize"); // sequelize 연산자 문법 Op 사용을 위한 호출
 
+const LikesController = require("../controllers/04_like_controller");
+const likesController = new LikesController();
+
 // 게시글 좋아요 API
-router.put("/posts/:postId/like", authMiddleware, async (req, res) => {
-  const { postId } = req.params;
-  const { userId } = res.locals.user;
-
-  if (!userId) {
-    return res.status(403).json({ errorMessage: "로그인 후 사용 가능합니다." });
-  }
-
-  console.log("현재 접속한 사용자의 ID", userId);
-
-  const post = await Posts.findOne({
-    where: { postId: postId },
-    attribute: ["liked"],
-  });
-
-  if (!post) {
-    return res.status(404).json({ message: "게시글을 찾을 수 없습니다." });
-  }
-  console.log(post);
-  console.log("현재 게시글의 좋아요 수", post.dataValues.liked);
-
-  try {
-    // 좋아요, 좋아요 취소 로직
-    const didILike = await Likes.findOne({
-      where: { [Op.and]: [{ PostId: postId }, { UserId: userId }] },
-    });
-    // console.log("좋아요했던가?", didILike);
-
-    if (!didILike) {
-      // 없다면 좋아요 등록
-      await Likes.create({ PostId: postId, UserId: userId });
-
-      return res.status(200).json({ LIKE: "해당 게시글에 좋아요 했습니다." });
-    } else if (didILike) {
-      // 있다면 좋아요 취소
-      await Likes.destroy({
-        where: { [Op.and]: [{ PostId: postId }, { UserId: userId }] },
-      });
-
-      return res
-        .status(200)
-        .json({ CANCEL: "해당 게시글의 좋아요를 취소했습니다." });
-    }
-    // 기능 작동은 하는데 이런 식으로 하면 likeId가 끝도없이 계속 늘어난다..
-    // 당장은 괜찮겠지만 12351235125 이 정도로 늘어나면 문제 생길텐데
-  } catch (error) {
-    return res
-      .status(400)
-      .json({ errorMessage: "좋아요 작업에 실패했습니다." });
-  }
-});
+router.put("/posts/:postId/like", authMiddleware, likesController.likeComment);
 
 // 좋아요 게시글 조회 API
 router.get("/likePost", authMiddleware, async (req, res) => {
@@ -100,7 +53,6 @@ router.get("/likePost", authMiddleware, async (req, res) => {
         "updatedAt",
       ],
     },
-    // order:[["liked", "DESC"]],
   });
 
   try {

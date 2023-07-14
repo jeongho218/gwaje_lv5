@@ -1,4 +1,5 @@
 const { Posts } = require("../models");
+const { Op } = require("sequelize");
 
 class PostRepository {
   // 게시글 작성
@@ -32,14 +33,23 @@ class PostRepository {
         title,
         content,
       },
-      { where: { postId: postId } }
+      {
+        where: {
+          [Op.and]: [{ PostId: postId }, { UserId: userId }],
+        },
+      }
     );
+
     return updatePost;
   };
 
   // 게시글 삭제
   deletePost = async (postId) => {
-    const deletePost = await Posts.destroy({ where: { postId: postId } });
+    const deletePost = await Posts.destroy({
+      where: {
+        [Op.and]: [{ PostId: postId }, { UserId: userId }],
+      },
+    });
     return deletePost;
   };
 }

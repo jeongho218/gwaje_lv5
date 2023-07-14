@@ -71,7 +71,7 @@ class PostService {
 
   // 게시글 삭제
   deletePost = async (postId) => {
-    const deletePostData = await this.postRepository.deletePost(postId);
+    await this.postRepository.deletePost(postId);
     return;
   };
 }

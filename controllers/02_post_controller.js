@@ -97,13 +97,6 @@ class PostsController {
       });
     }
 
-    // if (post.User.userId !== userId) {
-    //   console.log("게시글 작성자의 ID", post.User.userId);
-    //   return res
-    //     .status(403)
-    //     .json({ errorMessage: "다른 사람의 게시글은 수정할 수 없습니다." });
-    // }
-
     if (!title) {
       res
         .status(400)
@@ -149,13 +142,6 @@ class PostsController {
           "게시글의 삭제 권한이 존재하지 않습니다. 로그인 후 사용 가능합니다.",
       });
     }
-
-    // if (post.User.userId !== userId) {
-    //   console.log("게시글 작성자의 ID", post.User.userId);
-    //   return res
-    //     .status(403)
-    //     .json({ errorMessage: "다른 사람의 게시글은 삭제할 수 없습니다." });
-    // }
 
     try {
       await this.postService.deletePost(postId);
