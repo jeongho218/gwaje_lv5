@@ -52,6 +52,22 @@ class LikeService {
   };
 
   // 좋아요 게시글 조회 API
+  findLikedPost = async (userId) => {
+    const findLikedPostData = await this.likeRepository.findLikedPost(userId);
+
+    // 1. postId, userId, email, title, createdAt, updatedAt으로 출력
+    // 2. 좋아요 개수 파악하여 내림차순 정렬
+
+    // return;
+    return {
+      postId: findLikedPostData.PostId,
+      userId: findLikedPostData.UserId,
+      email: findLikedPostData.email,
+      title: findLikedPostData.title,
+      createdAt: findLikedPostData.createdAt,
+      updatedAt: findLikedPostData.updatedAt,
+    };
+  };
 }
 
 module.exports = LikeService;

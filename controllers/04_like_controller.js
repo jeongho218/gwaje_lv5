@@ -35,7 +35,6 @@ class LikeController {
 
         return res.status(200).json({ LIKE: "해당 게시글에 좋아요 했습니다." });
       } else if (didILike) {
-        console.log("이미 좋아요 했음");
         // 있다면 좋아요 취소
 
         await this.likeService.subLike(postId, userId);
@@ -53,6 +52,28 @@ class LikeController {
   };
 
   // 좋아요 게시글 조회 API
+  getLikedPost = async (req, res) => {
+    const { userId } = res.locals.user;
+    if (!userId) {
+      return res
+        .status(403)
+        .json({ errorMessage: "로그인 후 사용 가능합니다." });
+    }
+
+    try {
+      const likedPost = this.likeService.findLikedPost(userId);
+
+      console.log("try 안까진 들어옴");
+      console.log("컨트롤러", likedPost);
+
+      return res.status(200).json({ yourLIkePosts: likedPost });
+    } catch (error) {
+      console.log(error);
+      return res
+        .status(400)
+        .json({ errorMessage: "좋아요 게시글 조회에 실패하였습니다." });
+    }
+  };
 }
 
 module.exports = LikeController;

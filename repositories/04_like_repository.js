@@ -46,6 +46,28 @@ class LikeRepository {
   };
 
   // 좋아요 게시글 조회
+  findLikedPost = async (userId) => {
+    const likedPosts = await Likes.findAll({
+      where: { UserId: userId },
+      attributes: ["UserId"],
+      include: {
+        model: Posts,
+        // where: { postId: postId },
+        attributes: [
+          "postId",
+          "UserId",
+          "title",
+          "content",
+          "createdAt",
+          "updatedAt",
+        ],
+      },
+    });
+
+    // const likedPosts = await Likes.findAll({ where: { UserId: userId } });
+
+    return likedPosts;
+  };
 }
 
 module.exports = LikeRepository;
